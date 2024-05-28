@@ -173,7 +173,8 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = "__all__"
+        #fields = "__all__"
+        fields = ['email','username','password']
 
 class LoginForm(forms.Form):
     username = forms.CharField()
