@@ -174,7 +174,7 @@ class SignupForm(UserCreationForm):
     class Meta:
         model = CustomUser
         #fields = "__all__"
-        fields = ['email','username','password']
+        fields = ['email','username','password1','password2','password_strength']
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -185,6 +185,7 @@ cat <<EOF > users/views.py
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout
 from .forms import SignupForm, LoginForm
+from django.contrib import messages
 
 # signup page
 def user_signup(request):
