@@ -3,7 +3,7 @@ Script to install a basic Django site with main structure and configuration, api
 
 # Frontend
 ## Login
-
+https://github.com/lucapiccio/django_simplify/blob/9d35e93144af5c8c9987a4941fbdb804104f7f5f/img/login.png
 ## Homepage
 
 ## API
