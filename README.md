@@ -1,6 +1,12 @@
 # django_simplify
 Script to install a basic Django site with main structure and configuration, api support, bootstrap frontend, ecc...
 
+# Using
+- cd /tmp
+- git clone https://github.com/lucapiccio/django_simplify.git
+- chmod +x django_simplify/install.sh
+- sudo django_simplify/install.sh
+
 # Frontend
 ## Login
 <p style="text-align: center">
@@ -21,12 +27,6 @@ Script to install a basic Django site with main structure and configuration, api
 <p style="text-align: center">
   <img src="https://github.com/lucapiccio/django_simplify/blob/2fde72fe6df93a53ceb98ff34b7da7d00e903de1/img/admin.png" style="width: 50%; " />
 </p>
-
-# Using
-- cd /tmp
-- git clone https://github.com/lucapiccio/django_simplify.git
-- chmod +x django_simplify/install.sh
-- sudo django_simplify/install.sh
 
 # What the script do:
 - Install all apt packages necessaires
