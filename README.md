@@ -1,6 +1,20 @@
 # django_simplify
 Script to install a basic Django site with main structure and configuration, api support, bootstrap frontend, ecc...
 
+# Frontend
+## Login
+
+## Homepage
+
+## API
+
+## Admin
+
+# Using
+- git clone 
+- chmod +x
+- sudo ./
+
 # What the script do:
 - Install all apt packages necessaires
 - Create python venv and install django inside /var/www/django
@@ -18,6 +32,8 @@ Script to install a basic Django site with main structure and configuration, api
 - Configure supervisor instead systemd if you have it, but i reccomends systemd service
 - Create script run_debug_foreground.sh to launch django in foreground with actived debug
 - Create script build.sh to rebuild / collect static / migrate / relaunch service
+- Create default administrator (user=admin : password=admin)
+- Create a sample .vimrc in root directory as example for correct editing python with vim (please copy in ~/.vimrc before using vi to edit python).
 
 # How is configured
 - core/urls.py : the Django urls + router for api urls
@@ -28,7 +44,7 @@ Script to install a basic Django site with main structure and configuration, api
 - api/serializers.py + api/views.py : definitions of api models (need to adapt the router in core/urls.py)
 - frontend/models.py : the models (tables of db) definitions
 - frontend/views.py : the views for frontend
-- templates/base_generic.html : the main template
+- templates/base_generic.html : the main template (contains headers, navbar, scripts, css)
 - templates/index.html : template homepage 
 - templates/login.html : template form login
 - templates/signup.html : template user registration
