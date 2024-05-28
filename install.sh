@@ -396,14 +396,12 @@ cat <<EOF > templates/signup.html
 
 {% block content %}
   <h1>Signup</h1>
-  <div class="container">
   <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.as_ul }}
     <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Signup</button>
     <a href="{% url 'login' %}">Already have account?</a>
   </form>
-  </div>
   <script type="text/javascript" src="{% static 'js/zxcvbn.js' %}"></script>
   <script>
   document.addEventListener('DOMContentLoaded', function () {
