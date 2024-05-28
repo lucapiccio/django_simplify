@@ -3,17 +3,30 @@ Script to install a basic Django site with main structure and configuration, api
 
 # Frontend
 ## Login
-https://github.com/lucapiccio/django_simplify/blob/9d35e93144af5c8c9987a4941fbdb804104f7f5f/img/login.png
+<p style="text-align: center">
+  <img src="https://github.com/lucapiccio/django_simplify/blob/9d35e93144af5c8c9987a4941fbdb804104f7f5f/img/login.png" style="width: 50%; " />
+</p>
+
 ## Homepage
+<p style="text-align: center">
+  <img src="https://github.com/lucapiccio/django_simplify/blob/2fde72fe6df93a53ceb98ff34b7da7d00e903de1/img/home.png" style="width: 50%; " />
+</p>
 
 ## API
+<p style="text-align: center">
+  <img src="https://github.com/lucapiccio/django_simplify/blob/2fde72fe6df93a53ceb98ff34b7da7d00e903de1/img/api.png" style="width: 50%; " />
+</p>
 
 ## Admin
+<p style="text-align: center">
+  <img src="https://github.com/lucapiccio/django_simplify/blob/2fde72fe6df93a53ceb98ff34b7da7d00e903de1/img/admin.png" style="width: 50%; " />
+</p>
 
 # Using
-- git clone 
-- chmod +x
-- sudo ./
+- cd /tmp
+- git clone https://github.com/lucapiccio/django_simplify.git
+- chmod +x django_simplify/install.sh
+- sudo django_simplify/install.sh
 
 # What the script do:
 - Install all apt packages necessaires
