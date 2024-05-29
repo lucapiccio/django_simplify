@@ -368,6 +368,9 @@ cat <<EOF > templates/index.html
     <div class="card">
         <div class="card-header">
             <h5>Datas</h5><br />
+            <button data-toggle="modal" class='edit_printer bs-modal btn btn-primary btn-sm hint--top-left' aria-label="Edit" type="button"><i class="fa-solid fa-pencil"></i></button>
+            <button aria-label="script d'installation de l'imprimante" role="button" class="btn btn-secondary hide-btn-content hint--top btn-sm"> <i class="fa fa-solid fa-cloud-arrow-down"> </i> </button></a>
+            <button aria-label="Delete" onclick="return confirm('Delete ?');" type="button" class="btn btn-danger btn-sm hint--top-left" data-target="#delete-button-modal-undefined-clermont"> <i class="fa-solid fa-trash-can"></i></button>
         </div>
     </div>
 {% endif %}
