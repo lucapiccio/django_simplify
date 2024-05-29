@@ -318,11 +318,11 @@ cat <<EOF > templates/base_generic.html
         <link rel="icon" href="{% static 'img/favicon.ico' %}">
         <!-- CSS -->
         {% bootstrap_css %}
-        <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}" type="text/css">
-        <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css"/>
+        <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}?{% now "U" %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/base.css' %}?{% now "U" %}" type="text/css">
         <!-- JS -->
         {% bootstrap_javascript %}
-        <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+        <script src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
     {% endblock %}
   {% endblock %}
   </head>
@@ -432,6 +432,14 @@ cat <<EOF > templates/signup.html
   </script>
 {% endblock %}
 EOF
+
+## Create personal CSS
+cat <<EOF > templates/css/base.css
+.container {
+    padding-top: 70px;
+}
+EOF
+
     ## Configure Additional Settings
     /usr/bin/sed -i "s/from pathlib import Path/import os\nfrom pathlib import Path/" core/settings.py
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
