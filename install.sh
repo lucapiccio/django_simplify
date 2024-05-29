@@ -46,6 +46,8 @@ else
     pip install fontawesomefree
     pip install django-bootstrap-modal-forms
     pip install django-redis
+    pip install django-import-export
+    pip install django-admin-interface
     ## Create Django project
     django-admin startproject core .
     ## Create app for custom user fields
@@ -143,7 +145,6 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('username', 'email', 'password1', 'password2', 'user_type'),
         }),
     )
-
 
 admin.site.register(CustomUser, CustomUserAdmin)
 EOF
@@ -448,7 +449,8 @@ EOF
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
     /usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
     /usr/bin/sed -i "s/INSTALLED_APPS = \[/INSTALLED_APPS = \[\n    'daphne',/" core/settings.py
-    /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
+    /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'import_export',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
+    /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -518,6 +520,8 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 USE_X_FORWARDED_PORT = True
 USE_X_FORWARDED_HOST = True
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 ASGI_APPLICATION = 'core.asgi.application'
 EOF
@@ -614,7 +618,7 @@ if os.environ.get('RUN_MAIN', None):
     print("##############BOOT#############")
     tasks.boot()
 
-## Site variables
+## Admin Site Personnalisation
 admin.site.site_header = "Django Application"
 admin.site.site_title = "Django Application"
 admin.site.index_title = "Django Application Admin"
@@ -665,6 +669,11 @@ DJANGO_SUPERUSER_USERNAME=admin \
 DJANGO_SUPERUSER_PASSWORD=admin \
 DJANGO_SUPERUSER_EMAIL="admin@localhost" \
 python3 manage.py createsuperuser --noinput
+
+## Add templates for admin page
+python3 manage.py loaddata admin_interface_theme_bootstrap.json
+python3 manage.py loaddata admin_interface_theme_foundation.json
+python3 manage.py loaddata admin_interface_theme_uswds.json
 
 ## Install django crontab (app cron/tasks.py)
 python3 manage.py crontab remove
