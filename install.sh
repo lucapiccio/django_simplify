@@ -45,6 +45,7 @@ else
     pip install django-bootstrap-v5
     pip install fontawesomefree
     pip install django-bootstrap-modal-forms
+    pip install django-redis
     ## Create Django project
     django-admin startproject core .
     ## Create app for custom user fields
@@ -526,6 +527,28 @@ application = get_asgi_application()
 tasks.boot()
 EOF
 
+#### Using redis as cache server
+if [ ! -d /etc/redis ] ; then
+    apt install redis-server
+fi
+
+cat <<EOF >> core/settings.py
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            "SOCKET_CONNECT_TIMEOUT": 5, 
+            "SOCKET_TIMEOUT": 5,
+        },
+        "KEY_PREFIX": "django"
+    }
+}
+DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+EOF
+
     ## Creating Cron jobs
 cat <<EOF > cron/tasks.py
 from django.core.mail import send_mail
@@ -636,7 +659,7 @@ python3 manage.py createsuperuser --noinput
 python3 manage.py crontab remove
 python3 manage.py crontab add
 
-#### if needed reverse proxy (ex: to configure websockets)
+#### Needed reverse proxy (to serve static files and optionally to configure websockets)
 if [ ! -d "/etc/nginx" ]; then
     apt install nginx php-fpm
 fi
