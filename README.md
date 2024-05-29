@@ -43,6 +43,7 @@ Script to install a basic Django site with main structure and configuration, api
   - /etc/systemd/system/django.service : systemd service
 - Install and configure reverse proxy Nginx to serve django in SSL and serve the staticfiles
 - Configure supervisor instead systemd if you have it, but i reccomends systemd service
+- Install and configure redis as cache system
 - Create script run_debug_foreground.sh to launch django in foreground with actived debug
 - Create script build.sh to rebuild / collect static / migrate / relaunch service
 - Create default administrator (user=admin : password=admin)
