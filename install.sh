@@ -335,7 +335,6 @@ cat <<EOF > templates/base_generic.html
         {% bootstrap_javascript %}
         <script src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
         <script src="{% static "js/tiny_mce/tiny_mce.js" %}?{% now "U" %}"></script>
-        <script src="{% url "tinymce-js" "TINYMCE" %}"></script>
     {% endblock %}
   {% endblock %}
   </head>
