@@ -285,7 +285,7 @@ class UserUpdateView(BSModalUpdateView):
     success_message = 'Success!'
     success_url = reverse_lazy('index')
 
-class BookDeleteView(BSModalDeleteView):
+class UserDeleteView(BSModalDeleteView):
     model = CustomUser
     template_name = 'form_delete.html'
     success_message = 'Success!'
