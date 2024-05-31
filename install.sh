@@ -257,7 +257,7 @@ from bootstrap_modal_forms.generic import BSModalCreateView,BSModalUpdateView,BS
 from django.views.decorators.http import require_http_methods
 from .models import *
 from users.models import *
-from .forms import *
+from users.forms import *
 
 # homepage
 @login_required
