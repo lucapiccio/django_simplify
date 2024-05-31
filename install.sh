@@ -805,11 +805,10 @@ urlpatterns = [
     ## TinyMCE
     path('tinymce/', include('tinymce.urls')),
     ## Modal EDIT
-    path('update/<int:pk>', views.UserUpdateView.as_view(), name='update_user'),
-    path('read/<int:pk>', views.UserReadView.as_view(), name='read_user'),
-    path('delete/<int:pk>', views.UserDeleteView.as_view(), name='delete_user'),
+    path('update/<int:pk>', frontendviews.UserUpdateView.as_view(), name='update_user'),
+    path('read/<int:pk>', frontendviews.UserReadView.as_view(), name='read_user'),
+    path('delete/<int:pk>', frontendviews.UserDeleteView.as_view(), name='delete_user'),
 ]
-
 EOF
     pip freeze > requirements.txt
 fi
