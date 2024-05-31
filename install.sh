@@ -19,7 +19,15 @@
 # Script for installing Django in Venv on Debian System launched as systemd service with daphne asgi async python webserver
 # Reverse proxy needed : nginx for serve static files
 #
-mkdir -p /var/www
+if [ ! -d "/var/www" ]; then
+    mkdir -p /var/www
+fi
+if [ -d "/var/www/django" ]; then
+    if [ -d "/var/www/django.old" ]; then
+        rm -rf /var/www/django.old
+    fi
+    mv /var/www/django /var/www/django.old
+fi
 cd /var/www
 ## Install apt packages
 apt-get install python3 python3-pip python3-venv python3-dev default-libmysqlclient-dev build-essential pkg-config
