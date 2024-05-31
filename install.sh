@@ -48,6 +48,7 @@ else
     pip install django-redis
     pip install django-import-export
     pip install django-admin-interface
+    pip install django-tinymce
     ## Create Django project
     django-admin startproject core .
     ## Create app for custom user fields
@@ -325,6 +326,8 @@ cat <<EOF > templates/base_generic.html
         <!-- JS -->
         {% bootstrap_javascript %}
         <script src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
+        <script src="{% static "js/tiny_mce/tiny_mce.js" %}?{% now "U" %}"></script>
+        <script src="{% url "tinymce-js" "TINYMCE" %}"></script>
     {% endblock %}
   {% endblock %}
   </head>
@@ -462,7 +465,7 @@ EOF
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
     /usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
     /usr/bin/sed -i "s/INSTALLED_APPS = \[/INSTALLED_APPS = \[\n    'daphne',/" core/settings.py
-    /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'import_export',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
+    /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'import_export',\n    'tinymce',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
     /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
@@ -655,6 +658,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     ## Enabling authentification for api
     path('api-auth/', include('rest_framework.urls')),
+    ## TinyMCE
+    path('tinymce/', include('tinymce.urls')),
 ]
 
 EOF
