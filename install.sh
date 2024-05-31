@@ -273,7 +273,7 @@ def index(request):
         raise Http404("Object searched does not exist")
     return render(request,'index.html', context=context)
 
-class UserCreationView(BSModalCreateView):
+class UserCreateView(BSModalCreateView):
     template_name = 'form_create.html'
     form_class = UserModalForm
     success_message = 'Success!'
@@ -805,8 +805,8 @@ urlpatterns = [
     ## TinyMCE
     path('tinymce/', include('tinymce.urls')),
     ## Modal EDIT
+    path('create/<int:pk>', frontendviews.UserCreateView.as_view(), name='create_user'),
     path('update/<int:pk>', frontendviews.UserUpdateView.as_view(), name='update_user'),
-    path('read/<int:pk>', frontendviews.UserReadView.as_view(), name='read_user'),
     path('delete/<int:pk>', frontendviews.UserDeleteView.as_view(), name='delete_user'),
 ]
 EOF
