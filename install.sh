@@ -63,6 +63,7 @@ else
     mkdir templates/js
     mkdir templates/img
     mkdir templates/py
+    mkdir templates/rest_framework
     touch templates/css/base.css
     touch templates/img/favicon.ico
 
@@ -442,6 +443,18 @@ cat <<EOF > templates/css/base.css
 .container {
     padding-top: 70px;
 }
+EOF
+
+    ## Create template api Rest
+cat <<EOF > templates/rest_framework/api.html
+{% extends "rest_framework/base.html" %}
+{% block title %} API {% endblock %}
+{% block branding %}
+    <span>
+        <a class='navbar-brand' rel="nofollow" href="{% url 'index' %}">Home</a>
+{% endblock %}
+{% block bootstrap_navbar_variant %}
+{% endblock %}
 EOF
 
     ## Configure Additional Settings
