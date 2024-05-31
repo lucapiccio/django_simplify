@@ -191,6 +191,12 @@ class SignupForm(UserCreationForm):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+class UserModalForm(BSModalModelForm):
+    class Meta:
+        model = CustomUser
+        fields = "__all__"
+        #exclude = ['active','enabled','pid']
 EOF
     ## Create view for login - logout
 cat <<EOF > users/views.py
@@ -251,6 +257,7 @@ from bootstrap_modal_forms.generic import BSModalCreateView,BSModalUpdateView,BS
 from django.views.decorators.http import require_http_methods
 from .models import *
 from users.models import *
+from .forms import *
 
 # homepage
 @login_required
@@ -263,6 +270,18 @@ def index(request):
     except :
         raise Http404("Object searched does not exist")
     return render(request,'index.html', context=context)
+
+class UserCreationView(BSModalCreateView):
+    template_name = 'form_create.html'
+    form_class = UserModalForm
+    success_message = 'Success!'
+    success_url = reverse_lazy('index')
+
+class UserUpdateView(BSModalUpdateView):
+    template_name = 'form_edit.html'
+    form_class = UserModalForm
+    success_message = 'Success!'
+    success_url = reverse_lazy('index')
 EOF
     ## Configure API Serializers
 cat <<EOF > api/serializers.py
@@ -465,6 +484,83 @@ cat <<EOF > templates/rest_framework/api.html
 {% endblock %}
 {% block bootstrap_navbar_variant %}
 {% endblock %}
+EOF
+
+## Modal Create
+cat <<EOF > templates/form_create.html
+<form method="post" action="">
+  {% csrf_token %}
+
+ <div class="modal-header">
+    <h5 class="modal-title">Create new</h5>
+    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    {% for field in form %}
+      <div class="form-group{% if field.errors %} invalid{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        <br />
+        {% for error in field.errors %}
+          <p class="help-block">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </div>
+
+</form>
+EOF
+
+## Modal EDIT
+cat <<EOF > templates/form_edit.html
+<form method="post" action="">
+  {% csrf_token %}
+
+ <div class="modal-header">
+    <h5 class="modal-title">Modify</h5>
+    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+      {% for error in form.non_field_errors %}
+        {{ error }}
+      {% endfor %}
+    </div>
+    {% for field in form %}
+      <div class="form-group{% if field.errors %} invalid{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% render_field field class="form-control" placeholder=field.label %}
+        <div class="{% if field.errors %} invalid{% endif %}">
+          {% for error in field.errors %}
+            <p class="help-block">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <br />
+        {% for error in field.errors %}
+          <p class="help-block">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary">Update</button>
+  </div>
+
+</form>
 EOF
 
     ## Configure Additional Settings
