@@ -877,6 +877,7 @@ chmod +x build.sh
 
 cat <<EOF > run_debug_foreground.sh
 #!/bin/bash
+service django stop
 source bin/activate
 /usr/bin/sed -i "s/DEBUG =.*/DEBUG = True/" core/settings.py
 #python manage.py runcrons --force
