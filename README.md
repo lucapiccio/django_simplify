@@ -38,6 +38,7 @@ Script to install a basic Django site with main structure and configuration, api
   - frontend: views for frontend
   - api: views and serializer for API Rest Framework
   - cron: planified task
+- Create base templates based on bootstrap5, fontawesome, TinyMCE
 - Create a systemd service to launch django with daphne asgi
   - core/asgi.py : startup code
   - /etc/systemd/system/django.service : systemd service
