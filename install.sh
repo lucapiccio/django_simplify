@@ -163,6 +163,8 @@ cat <<EOF > users/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import password_validation
+from bootstrap_modal_forms.mixins import PopRequestMixin, CreateUpdateAjaxMixin
+from bootstrap_modal_forms.forms import BSModalModelForm
 from .models import CustomUser
 
 class SignupForm(UserCreationForm):
