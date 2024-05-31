@@ -255,7 +255,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import Http404,HttpResponse
 from django.core.files import File
-from bootstrap_modal_forms.generic import BSModalCreateView,BSModalUpdateView,BSModalDeleteView
+from bootstrap_modal_forms.generic import BSModalCreateView,BSModalUpdateView,BSModalDeleteView,BSModalReadView,BSModalFormView,BSModalLoginView
 from django.views.decorators.http import require_http_methods
 from .models import *
 from users.models import *
@@ -282,6 +282,12 @@ class UserCreationView(BSModalCreateView):
 class UserUpdateView(BSModalUpdateView):
     template_name = 'form_edit.html'
     form_class = UserModalForm
+    success_message = 'Success!'
+    success_url = reverse_lazy('index')
+
+class BookDeleteView(BSModalDeleteView):
+    model = CustomUser
+    template_name = 'form_delete.html'
     success_message = 'Success!'
     success_url = reverse_lazy('index')
 EOF
@@ -573,7 +579,28 @@ cat <<EOF > templates/form_edit.html
     <button type="button" class="btn btn-default" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
     <button type="submit" class="btn btn-primary">Update</button>
   </div>
+</form>
+EOF
 
+## Modal Delete
+cat <<EOF > templates/form_delete.html
+{% load widget_tweaks %}
+
+<form method="post" action="">
+  {% csrf_token %}
+
+  <div class="modal-header">
+    <h3 class="modal-title">Delete</h3>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="delete-text">Are you sure you want to delete?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" id="delete-btn" class="btn btn-danger">Delete</button>
+  </div>
 </form>
 EOF
 
@@ -777,6 +804,10 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     ## TinyMCE
     path('tinymce/', include('tinymce.urls')),
+    ## Modal EDIT
+    path('update/<int:pk>', views.UserUpdateView.as_view(), name='update_user'),
+    path('read/<int:pk>', views.UserReadView.as_view(), name='read_user'),
+    path('delete/<int:pk>', views.UserDeleteView.as_view(), name='delete_user'),
 ]
 
 EOF
