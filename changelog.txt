@@ -1,3 +1,8 @@
 ##### Version 1.0 #####
+Added asking user during execution of script to select if install and configure nginx / supervisor / systemd
+
 ##### Version 0.2 #####
+Added Signin page with password validation javascript
+
 ##### Version 0.1 #####
+Created Basic django installation with Bootstrap frontend
