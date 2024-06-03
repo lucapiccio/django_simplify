@@ -651,7 +651,7 @@ function deleteBookModalForm() {
 deleteBookModalForm();
 EOF
 
-cat <<EOF > templates/error.html
+cat <<EOF > templates/400.html
 <html>
 <head>
     <meta charset="UTF-8">
@@ -671,7 +671,100 @@ cat <<EOF > templates/error.html
     <h1>We&rsquo;ll be back soon!</h1>
     <br>
     <div>
-    <h3>Server Error</h3>
+    <h3>400 Server Error</h3>
+    <h4>An internal server error occured.</h4>
+    </div>
+    <div>
+        <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
+    </div>
+</article>
+</body>
+</html>
+EOF
+
+cat <<EOF > templates/403.html
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Site Maintenance</title>
+<style>
+  body { text-align: center; padding: 150px; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+</style>
+</head>
+<body>
+<article>
+    <h1>We&rsquo;ll be back soon!</h1>
+    <br>
+    <div>
+    <h3>403 Server Error</h3>
+    <h4>An internal server error occured.</h4>
+    </div>
+    <div>
+        <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
+    </div>
+</article>
+</body>
+</html>
+EOF
+
+cat <<EOF > templates/404.html
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Site Maintenance</title>
+<style>
+  body { text-align: center; padding: 150px; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+</style>
+</head>
+<body>
+<article>
+    <h1>We&rsquo;ll be back soon!</h1>
+    <br>
+    <div>
+    <h3>404 Server Error</h3>
+    <h4>An internal server error occured.</h4>
+    </div>
+    <div>
+        <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
+    </div>
+</article>
+</body>
+</html>
+EOF
+
+cat <<EOF > templates/500.html
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Site Maintenance</title>
+<style>
+  body { text-align: center; padding: 150px; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+</style>
+</head>
+<body>
+<article>
+    <h1>We&rsquo;ll be back soon!</h1>
+    <br>
+    <div>
+    <h3>500 Server Error</h3>
     <h4>An internal server error occured.</h4>
     </div>
     <div>
