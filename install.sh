@@ -1074,7 +1074,7 @@ python3 manage.py loaddata admin_interface_theme_uswds.json
 
 ## Create user alias of www-data (UID 33) for editing and have bash shell to launch in debug mode
 useradd --badname -d /var/www/django -M -g 33 -N -u 33 -o -s /bin/bash django
-adduser django sudo
+echo "django    ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/django.conf
 
 cat <<EOF > /var/www/django/.bashrc
 case \$- in
