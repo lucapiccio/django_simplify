@@ -1,5 +1,6 @@
 ##### Version 1.0 #####
 Added asking user during execution of script to select if install and configure nginx / supervisor / systemd
+Added templates for error pages 400,403,404,500
 
 ##### Version 0.2 #####
 Added Signin page with password validation javascript
