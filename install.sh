@@ -479,7 +479,7 @@ cat <<EOF > templates/signup.html
   <script>
   document.addEventListener('DOMContentLoaded', function () {
     const passwordInput = document.getElementById('password-input');
-    const passwordStrengthField = document.getElementById('password-strength');
+    const passwordStrengthField = document.getElementById('id_password_strength');
 
     passwordInput.addEventListener('input', function () {
         const password = passwordInput.value;
