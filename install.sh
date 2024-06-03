@@ -651,6 +651,37 @@ function deleteBookModalForm() {
 deleteBookModalForm();
 EOF
 
+cat <<EOF > templates/error.html
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Site Maintenance</title>
+<style>
+  body { text-align: center; padding: 150px; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+</style>
+</head>
+<body>
+<article>
+    <h1>We&rsquo;ll be back soon!</h1>
+    <br>
+    <div>
+    <h3>Server Error</h3>
+    <h4>An internal server error occured.</h4>
+    </div>
+    <div>
+        <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
+    </div>
+</article>
+</body>
+</html>
+EOF
+
     ## Configure Additional Settings
     /usr/bin/sed -i "s/from pathlib import Path/import os\nfrom pathlib import Path/" core/settings.py
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
@@ -891,7 +922,7 @@ python3 manage.py loaddata admin_interface_theme_uswds.json
 useradd --badname -d /var/www/django -M -g 33 -N -u 33 -o -s /bin/bash django
 
 cat <<EOF > /var/www/django/.bashrc
-case $- in
+case \$- in
     *i*) ;;
       *) return;;
 esac
@@ -899,45 +930,9 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 HISTSIZE=1000
 HISTFILESIZE=2000
-shopt -s checkwinsize
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-fi
-case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
-esac
-force_color_prompt=yes
 
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        color_prompt=yes
-    else
-        color_prompt=
-    fi
-fi
+PS1='${debian_chroot:+(\$debian_chroot)}[\d \t] \[\033[0;32m\]\u@\h:\[\033[0;37m\]\[\033[01;34m\][\w]\[\033[00m\]\\$\[\033[0m\] '
 
-if [ "$color_prompt" = yes ]; then
-    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PS1='${debian_chroot:+($debian_chroot)}[\d \t] \[\033[0;32m\]\u@\h:\[\033[0;37m\]\[\033[01;34m\][\w]\[\033[00m\]\$\[\033[0m\] '
-else
-    #PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-fi
-unset color_prompt force_color_prompt
-
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-fi
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 alias rm='rm -i'
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
