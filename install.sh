@@ -1283,7 +1283,7 @@ pip freeze > requirements.txt
 python3 manage.py collectstatic --clear --noinput
 python3 manage.py makemigrations
 python3 manage.py migrate
-if [ $(whoami) -eq "root" ]; then
+if [ "\$(whoami)" -eq "root" ]; then
     chown -R www-data:www-data /var/www/django
     #crontab -r
     #python3 manage.py crontab remove
