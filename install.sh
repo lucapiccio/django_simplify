@@ -1110,9 +1110,9 @@ python3 manage.py crontab remove
 python3 manage.py crontab add
 
 while true; do
-    read -p "Do you wish to install and configure Nginx As reverse proxy (django is listen on port 8000)? [yn]" yn
+    read -p "Django is listen on port 8000. Do you wish to install and configure Nginx As reverse proxy on port 80/443? [Yn]" yn
     case $yn in
-        [Yy]* ) 
+        [Yy]*|"" ) 
 #### Needed reverse proxy (to serve static files and optionally to configure websockets)
 if [ ! -d "/etc/nginx" ]; then
     apt install nginx php-fpm
@@ -1235,9 +1235,9 @@ break;;
 done
 
 while true; do
-    read -p "Do you wish to install Django as systemd service? [yn]" yn
+    read -p "Do you wish to install Django as systemd service? [Yn]" yn
     case $yn in
-        [Yy]* ) 
+        [Yy]*|"" ) 
 ## Install the systemd service to autolaunch python asgi webserver
 if [ -d "/etc/systemd" ]; then
 cat <<EOF > /etc/systemd/system/django.service
@@ -1273,12 +1273,13 @@ break;;
 done
 
 while true; do
-    read -p "Do you wish to install Django as supervisord service? [yn]" yn
+    read -p "Do you wish to install Django as supervisord service? [yN]" yn
     case $yn in
         [Yy]* ) 
 ## Prefer Systemd directly to reduce num of software installed
 if [ -d "/etc/supervisor" ]; then
     apt -y -q install supervisor
+fi
 if [ -d "/etc/supervisor/conf.d" ]; then
     mkdir -p /etc/supervisor/conf.d
 fi
@@ -1302,7 +1303,7 @@ EOF
        service supervisor restart
 
 break;;
-        [Nn]* ) break;;
+        [Nn]*|"" ) break;;
         * ) break;;
     esac
 done
