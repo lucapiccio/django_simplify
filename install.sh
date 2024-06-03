@@ -887,6 +887,9 @@ python3 manage.py loaddata admin_interface_theme_bootstrap.json
 python3 manage.py loaddata admin_interface_theme_foundation.json
 python3 manage.py loaddata admin_interface_theme_uswds.json
 
+## Create user alias of www-data (UID 33) for editing and have bash shell to launch in debug mode
+useradd --badname -d /var/www/django -M -g 33 -N -u 33 -o -s /bin/bash django
+
 ## Set Rights to apache/nginx user
 chown -R www-data:www-data /var/www/django
 
