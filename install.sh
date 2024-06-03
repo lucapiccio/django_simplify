@@ -30,7 +30,7 @@ if [ -d "/var/www/django" ]; then
 fi
 cd /var/www
 ## Install apt packages
-apt-get install python3 python3-pip python3-venv python3-dev default-libmysqlclient-dev build-essential pkg-config
+apt-get -y -q install python3 python3-pip python3-venv python3-dev default-libmysqlclient-dev build-essential pkg-config sudo
 ## Configure python virtual environnement
 python3 -m venv django
 cd django
@@ -376,7 +376,7 @@ cat <<EOF > templates/base_generic.html
                 {% block userlinks %}
                     {% if user.is_authenticated %}
                         <li><a class='nav-link' href="/api">API browser</a></li>
-                        <li><a class='nav-link' href="{% url 'logout' %}">Logout</a></li>
+                        <li><a class='nav-link' onclick="return confirm('Logout?');" href="{% url 'logout' %}">Logout</a></li>
                         {% if user.is_staff %}
                             <li><a class='nav-link' href="{% url 'admin:index' %}">Django Admin</a></li>
                         {% endif %}
@@ -1074,6 +1074,7 @@ python3 manage.py loaddata admin_interface_theme_uswds.json
 
 ## Create user alias of www-data (UID 33) for editing and have bash shell to launch in debug mode
 useradd --badname -d /var/www/django -M -g 33 -N -u 33 -o -s /bin/bash django
+adduser django sudo
 
 cat <<EOF > /var/www/django/.bashrc
 case \$- in
@@ -1282,13 +1283,23 @@ pip freeze > requirements.txt
 python3 manage.py collectstatic --clear --noinput
 python3 manage.py makemigrations
 python3 manage.py migrate
-chown -R www-data:www-data /var/www/django
-#crontab -r
-#python3 manage.py crontab remove
-#python3 manage.py crontab add
-#service supervisor restart
-service django restart
-service nginx restart
+if [ $(whoami) -eq "root" ]; then
+    chown -R www-data:www-data /var/www/django
+    #crontab -r
+    #python3 manage.py crontab remove
+    #python3 manage.py crontab add
+    #service supervisor restart
+    service django restart
+    service nginx restart
+else
+    sudo chown -R www-data:www-data /var/www/django
+    #sudo crontab -r
+    #sudo python3 manage.py crontab remove
+    #sudo python3 manage.py crontab add
+    #sudo service supervisor restart
+    sudo service django restart
+    sudo service nginx restart
+fi
 EOF
 chmod +x build.sh
 chown -R www-data:www-data build.sh
