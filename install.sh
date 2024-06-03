@@ -887,7 +887,10 @@ python3 manage.py loaddata admin_interface_theme_bootstrap.json
 python3 manage.py loaddata admin_interface_theme_foundation.json
 python3 manage.py loaddata admin_interface_theme_uswds.json
 
-## Install django crontab (app cron/tasks.py)
+## Set Rights to apache/nginx user
+chown -R www-data:www-data /var/www/django
+
+## Install django crontab on root crontab (app cron/tasks.py)
 python3 manage.py crontab remove
 python3 manage.py crontab add
 
@@ -1024,7 +1027,7 @@ ExecStart=/var/www/django/bin/daphne core.asgi:application --proxy-headers --por
 TimeoutStartSec=0
 RestartSec=10
 Restart=on-failure
-#User=www-data
+User=www-data
 KillSignal=SIGQUIT
 
 [Install]
@@ -1065,6 +1068,7 @@ pip freeze > requirements.txt
 python3 manage.py collectstatic --clear --noinput
 python3 manage.py makemigrations
 python3 manage.py migrate
+chown -R www-data:www-data /var/www/django
 #crontab -r
 #python3 manage.py crontab remove
 #python3 manage.py crontab add
