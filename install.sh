@@ -1421,7 +1421,7 @@ nnoremap <esc>^[ <esc>^[
 EOF
 chown -R www-data:www-data .vimrc
 
-cat <<EOF > make-docker.sh
+cat <<EOFFF > make-docker.sh
 #!/bin/bash
 
 apt -y -q install docker docker-compose docker.io
@@ -1460,12 +1460,12 @@ EOF
 docker build -t django-bootstrap-app .
 docker network create my-django-postgres-network
 docker run --name my-postgres -p 5432:5432 -e POSTGRES_USER=<your_postgres_user> -e POSTGRES_PASSWORD=<your_posgres_user_password> --network my-django-postgres-network -d postgres
-docker --env-file .env run --name django-todo-app-c1 -p 8000:8000 --network my-django-postgres-network -d django-todo-app
-docker exec -it django-todo-app-c1 python manage.py migrate
-docker tag django-todo-app <dockerhub_username>/django-todo-app
-docker push <dockerhub_username>/django-todo-app
+docker --env-file .env run --name django-bootstrap-app-c1 -p 8000:8000 --network my-django-postgres-network -d django-bootstrap-app
+docker exec -it django-bootstrap-app-c1 python manage.py migrate
+docker tag django-bootstrap-app <dockerhub_username>/django-bootstrap-app
+docker push <dockerhub_username>/django-bootstrap-app
 
-docker pull <dockerhub_username>/django-todo-app
+docker pull <dockerhub_username>/django-bootstrap-app
 
 ## Github Docker image
 mkdir -p .github/workflows
@@ -1539,13 +1539,13 @@ services:
 volumes:
   pg_data:
 EOF
-
 docker compose build
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
 docker compose up
 docker compose run web python manage.py migrate
 docker compose exec my-postgres psql -U <your-postgres-user> -d django_todo
+EOFFF
 deactivate
 
 echo "To login in django venv do:"
