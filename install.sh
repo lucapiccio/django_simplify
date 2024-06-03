@@ -640,7 +640,7 @@ function updateBookModalForm() {
         });
     });
 }
-updateBookModalForm();
+//updateBookModalForm();
 
 // Delete book buttons - formURL is retrieved from the data of the element
 function deleteBookModalForm() {
@@ -648,7 +648,7 @@ function deleteBookModalForm() {
         \$(this).modalForm({formURL: \$(this).data("form-url"), isDeleteForm: true});
     });
 }
-deleteBookModalForm();
+//deleteBookModalForm();
 EOF
 
 cat <<EOF > templates/400.html
