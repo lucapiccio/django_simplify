@@ -1080,6 +1080,7 @@ service django restart
 service nginx restart
 EOF
 chmod +x build.sh
+chown -R www-data:www-data build.sh
 
 cat <<EOF > run_debug_foreground.sh
 #!/bin/bash
@@ -1093,6 +1094,7 @@ source bin/activate
 /usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
 EOF
 chmod +x run_debug_foreground.sh
+chown -R www-data:www-data run_debug_foreground.sh
 
 cat <<EOF > .vimrc
 "Active function arrow keys
@@ -1158,4 +1160,5 @@ inoremap <Esc>OS -
 inoremap <Esc>OM <Enter>
 nnoremap <esc>^[ <esc>^[
 EOF
+chown -R www-data:www-data .vimrc
 deactivate
