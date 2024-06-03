@@ -362,6 +362,7 @@ cat <<EOF > templates/base_generic.html
         {% bootstrap_javascript %}
         <script src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
         <script src="{% static "js/tiny_mce/tiny_mce.js" %}?{% now "U" %}"></script>
+        <script src="{% static "js/custom_modal.js" %}?{% now "U" %}"></script>
     {% endblock %}
   {% endblock %}
   </head>
@@ -602,6 +603,52 @@ cat <<EOF > templates/form_delete.html
     <button type="submit" id="delete-btn" class="btn btn-danger">Delete</button>
   </div>
 </form>
+EOF
+
+## Create custom javascript to edit form
+cat <<EOF > templates/js/custom_modal.js
+// Update book asynchronous button
+// message
+var asyncSuccessMessageUpdate = [
+    "<div ",
+    "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+    "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
+    "Success: Updated.",
+    "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
+    "<span aria-hidden='true'>&times;</span>",
+    "</button>",
+    "</div>",
+    "<script>",
+    "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
+    "<\/script>"
+].join("");
+
+// modal form
+function updateBookModalForm() {
+    $(".update-book").each(function () {
+        $(this).modalForm({
+            formURL: $(this).data("form-url"),
+            asyncUpdate: true,
+            asyncSettings: {
+                closeOnSubmit: false,
+                successMessage: asyncSuccessMessageUpdate,
+                dataUrl: "books/",
+                dataElementId: "#books-table",
+                dataKey: "table",
+                addModalFormFunction: reinstantiateModalForms
+            }
+        });
+    });
+}
+updateBookModalForm();
+
+// Delete book buttons - formURL is retrieved from the data of the element
+function deleteBookModalForm() {
+    $(".delete-book").each(function () {
+        $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
+    });
+}
+deleteBookModalForm();
 EOF
 
     ## Configure Additional Settings
