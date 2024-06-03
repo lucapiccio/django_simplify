@@ -362,7 +362,7 @@ cat <<EOF > templates/base_generic.html
         <!-- JS -->
         {% bootstrap_javascript %}
         <script src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
-        <script src="{% static "js/tiny_mce/tiny_mce.js" %}?{% now "U" %}"></script>
+        <script src="{% static "tinymce/tinymce.min.js" %}?{% now "U" %}"></script>
         <script src="{% static "js/custom_modal.js" %}?{% now "U" %}"></script>
     {% endblock %}
   {% endblock %}
@@ -455,11 +455,25 @@ cat <<EOF > templates/signup.html
   <h1>Signup</h1>
   <form method="POST">
     {% csrf_token %}
-    {{ form.as_ul }}
+    <div data-mdb-input-init class="form-outline mb-4">
+    {% for field in form %}
+        <div class="row mb-4">
+            <div class="col d-flex justify-content-center">
+            {{ field.label_tag }}
+            </div>
+            <div class="col">
+            {{ field }}
+            </div>
+        </div>
+        <div class="row mb-4">
+        {% for error in field.errors %}
+            {{ error }}
+        {% endfor %}
+        </div>
     <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Signup</button>
     <a href="{% url 'login' %}">Already have account?</a>
   </form>
-  <script type="text/javascript" src="{% static 'js/zxcvbn.js' %}"></script>
+  <script type="text/javascript" src="{% static 'zxcvbn_password/js/zxcvbn.js' %}?{% now "U" %}"></script>
   <script>
   document.addEventListener('DOMContentLoaded', function () {
     const passwordInput = document.getElementById('password-input');
