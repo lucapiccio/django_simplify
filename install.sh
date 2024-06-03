@@ -473,6 +473,7 @@ cat <<EOF > templates/signup.html
     {% endfor %}
     <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Signup</button>
     <a href="{% url 'login' %}">Already have account?</a>
+    </div>
   </form>
   <script type="text/javascript" src="{% static 'zxcvbn_password/js/zxcvbn.js' %}?{% now "U" %}"></script>
   <script>
