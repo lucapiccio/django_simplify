@@ -671,8 +671,8 @@ cat <<EOF > templates/400.html
     <h1>We&rsquo;ll be back soon!</h1>
     <br>
     <div>
-    <h3>400 Server Error</h3>
-    <h4>An internal server error occured.</h4>
+    <h3>400 Bad Request</h3>
+    <h4>The server cannot or will not process the request due to an apparent client error</h4>
     </div>
     <div>
         <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
@@ -702,8 +702,8 @@ cat <<EOF > templates/403.html
     <h1>We&rsquo;ll be back soon!</h1>
     <br>
     <div>
-    <h3>403 Server Error</h3>
-    <h4>An internal server error occured.</h4>
+    <h3>403 Forbidden</h3>
+    <h4>The request contained valid data and was understood by the server, but the server is refusing action</h4>
     </div>
     <div>
         <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
@@ -733,8 +733,8 @@ cat <<EOF > templates/404.html
     <h1>We&rsquo;ll be back soon!</h1>
     <br>
     <div>
-    <h3>404 Server Error</h3>
-    <h4>An internal server error occured.</h4>
+    <h3>404 Not Found</h3>
+    <h4>The requested resource could not be found but may be available in the future</h4>
     </div>
     <div>
         <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:webmaster@localhost">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
@@ -764,7 +764,7 @@ cat <<EOF > templates/500.html
     <h1>We&rsquo;ll be back soon!</h1>
     <br>
     <div>
-    <h3>500 Server Error</h3>
+    <h3>500 Internal Server Error</h3>
     <h4>An internal server error occured.</h4>
     </div>
     <div>
