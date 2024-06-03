@@ -1109,6 +1109,10 @@ chown -R www-data:www-data /var/www/django
 python3 manage.py crontab remove
 python3 manage.py crontab add
 
+while true; do
+    read -p "Do you wish to install and configure Nginx As reverse proxy (django is listen on port 8000)? [yn]" yn
+    case $yn in
+        [Yy]* ) 
 #### Needed reverse proxy (to serve static files and optionally to configure websockets)
 if [ ! -d "/etc/nginx" ]; then
     apt install nginx php-fpm
@@ -1224,7 +1228,16 @@ rm -f /etc/nginx/sites-enabled/*
 ln -s /etc/nginx/sites-available/django_* /etc/nginx/sites-enabled/
 systemctl daemon-reload
 service nginx restart
+break;;
+        [Nn]* ) break;;
+        * ) break;;
+    esac
+done
 
+while true; do
+    read -p "Do you wish to install Django as systemd service? [yn]" yn
+    case $yn in
+        [Yy]* ) 
 ## Install the systemd service to autolaunch python asgi webserver
 if [ -d "/etc/systemd" ]; then
 cat <<EOF > /etc/systemd/system/django.service
@@ -1250,10 +1263,25 @@ WantedBy=multi-user.target
 EOF
         systemctl daemon-reload
         service django restart
+else
+    echo "SystemD not present on system"
 fi
+break;;
+        [Nn]* ) break;;
+        * ) break;;
+    esac
+done
 
+while true; do
+    read -p "Do you wish to install Django as supervisord service? [yn]" yn
+    case $yn in
+        [Yy]* ) 
 ## Prefer Systemd directly to reduce num of software installed
+if [ -d "/etc/supervisor" ]; then
+    apt -y -q install supervisor
 if [ -d "/etc/supervisor/conf.d" ]; then
+    mkdir -p /etc/supervisor/conf.d
+fi
 cat <<EOF > /etc/supervisor/conf.d/django.conf
 [program:django]
 environment=PATH="/var/www/django/bin"
@@ -1272,7 +1300,13 @@ stdout_logfile=/var/log/supervisor/django.log
 EOF
        systemctl daemon-reload
        service supervisor restart
-fi
+
+break;;
+        [Nn]* ) break;;
+        * ) break;;
+    esac
+done
+
 
 ## Prepare simplify the reloading of code
 cat <<EOF > build.sh
