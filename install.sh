@@ -402,6 +402,14 @@ cat <<EOF > templates/base_generic.html
             </div>
             <div id="row content" role="main" >
             {% block content %}{% endblock %}
+            <br />
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li  {% if message.tags %} class="bg-info text-dark {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             </div><!-- /.content -->
         </div><!-- /.container -->
     </div><!-- /.wrapper -->
@@ -457,23 +465,37 @@ cat <<EOF > templates/signup.html
     {% csrf_token %}
     <div data-mdb-input-init class="form-outline mb-4">
     {% for field in form %}
-        <div class="row mb-4">
-            <div class="col d-flex justify-content-center">
-            {{ field.label_tag }}
+        {% if field.name == "password_strength" %}
+            <div class="row mb-4">
+                <div class="col d-flex justify-content-center">
+                    <label for="id_password_strength">Password strength:</label>
+                </div>
+                <div class="col">
+                    <div name="password_strength" id="id_password_strength"><div class="p-3 mb-2 bg-secondary text-white">----</div></div>
+                </div>
             </div>
-            <div class="col">
-            {{ field }}
+        {% else %}
+            <div class="row mb-4">
+                <div class="col d-flex justify-content-center">
+                {{ field.label_tag }}
+                </div>
+                <div class="col">
+                {{ field }}
+                </div>
             </div>
-        </div>
-        <div class="row mb-4">
-        {% for error in field.errors %}
-            {{ error }}
-        {% endfor %}
+            <div class="row mb-4">
+            {% for error in field.errors %}
+                <div class="col d-flex justify-content-center">
+                    <div class="p-3 mb-2 bg-warning text-dark">
+                    {{ error }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
         </div>
     {% endfor %}
     <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Signup</button>
     <a href="{% url 'login' %}">Already have account?</a>
-    </div>
   </form>
   <script type="text/javascript" src="{% static 'zxcvbn_password/js/zxcvbn.js' %}?{% now "U" %}"></script>
   <script>
@@ -486,18 +508,18 @@ cat <<EOF > templates/signup.html
         const result = zxcvbn(password);
 
         // Update password strength feedback
-        passwordStrengthField.innerHTML = ''; // Clear previous feedback
+        passwordStrengthField.innerHTML = '----'; // Clear previous feedback
 
         if (result.score === 0) {
-            passwordStrengthField.innerHTML = '<span style="color: red;">Very Weak</span>';
+            passwordStrengthField.innerHTML = '<div class="p-3 mb-2 bg-danger text-white">Very Weak</div>';
         } else if (result.score === 1) {
-            passwordStrengthField.innerHTML = '<span style="color: orange;">Weak</span>';
+            passwordStrengthField.innerHTML = '<div class="p-3 mb-2 bg-warning text-dark">Weak</div>';
         } else if (result.score === 2) {
-            passwordStrengthField.innerHTML = '<span style="color: yellow;">Medium</span>';
+            passwordStrengthField.innerHTML = '<div class="p-3 mb-2 bg-info text-dark">Medium</div>';
         } else if (result.score === 3) {
-            passwordStrengthField.innerHTML = '<span style="color: green;">Strong</span>';
+            passwordStrengthField.innerHTML = '<div class="p-3 mb-2 bg-success text-white">Strong</div>';
         } else if (result.score === 4) {
-            passwordStrengthField.innerHTML = '<span style="color: darkgreen;">Very Strong</span>';
+            passwordStrengthField.innerHTML = '<div class="p-3 mb-2 bg-success text-white">Very Strong</div>';
         }
     });
   });
