@@ -781,7 +781,7 @@ EOF
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
     /usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
     /usr/bin/sed -i "s/INSTALLED_APPS = \[/INSTALLED_APPS = \[\n    'daphne',/" core/settings.py
-    /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'import_export',\n    'tinymce',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
+    /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'zxcvbn_password',\n    'import_export',\n    'tinymce',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
     /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
@@ -845,6 +845,28 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/'
 PASSWORD_RESET_TIMEOUT = '259200'
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+    {
+        'NAME': 'zxcvbn_password.ZXCVBNValidator',
+        'OPTIONS': {
+            'min_score': 3,
+            'user_attributes': ('username', 'email', 'first_name', 'last_name')
+        }
+    }
+]
 
 SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
