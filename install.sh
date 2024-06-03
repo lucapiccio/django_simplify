@@ -56,6 +56,7 @@ else
     pip install django-redis
     pip install django-import-export
     pip install django-admin-interface
+    pip install django-zxcvbn-password
     pip install django-tinymce
     ## Create Django project
     django-admin startproject core .
