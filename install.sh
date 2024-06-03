@@ -470,6 +470,7 @@ cat <<EOF > templates/signup.html
             {{ error }}
         {% endfor %}
         </div>
+    {% endfor %}
     <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Signup</button>
     <a href="{% url 'login' %}">Already have account?</a>
   </form>
