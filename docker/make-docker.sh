@@ -12,8 +12,6 @@ EOF
 cat <<EOF > Dockerfile
 FROM debian:latest
 
-ENV PATH /usr/local/bin:$PATH
-
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
@@ -24,22 +22,21 @@ RUN echo exit 0 > /usr/sbin/policy-rc.d
 RUN apt-get update
 RUN apt-get install -y -q  apt-utils
 RUN apt-get install -y -q  dialog cron
-RUN apt-get install -y -q init
-RUN apt-get -y -q install bash python3 python3-pip python3-venv python3-dev default-libmysqlclient-dev build-essential pkg-config sudo nginx php-fpm daphne
+RUN apt-get -y -q install bash python3 python3-pip python3-venv python3-dev default-libmysqlclient-dev build-essential pkg-config sudo
 RUN apt-get clean
 RUN python3 -m venv /var/www/django
 WORKDIR /var/www/django
-COPY install-inside-docker.sh /tmp/
-RUN chmod +x /tmp/install-inside-docker.sh
-RUN /bin/bash /tmp/install-inside-docker.sh
-EXPOSE 80 8000
+COPY install.sh /tmp/
+RUN chmod +x /tmp/install.sh
+RUN /bin/bash /tmp/install.sh
+EXPOSE 80
 VOLUME /var/www/django/static
 VOLUME /var/www/django/media
 VOLUME /var/www/django/db
-CMD ["/sbin/init"]
+CMD ["/var/www/django/bin/daphne", "core.asgi:application", "--proxy-headers", "--port", "80", "--bind", "0.0.0.0", "-v1"]
 EOF
 
-cat <<EOF > install-inside-docker.sh
+cat <<EOFF > install-inside-docker.sh
 #!/bin/bash
 #
 # Copyright © 2024 Luca Piccinini <swipon83@gmail.com>
@@ -854,6 +851,7 @@ cat <<EOF > templates/500.html
 EOF
 
     ## Configure Additional Settings
+    /usr/bin/sed -i "s/STATIC_URL =.*/STATIC_URL = '\/static\/'/" core/settings.py
     /usr/bin/sed -i "s/db.sqlite3/db\/db.sqlite3/" core/settings.py
     /usr/bin/sed -i "s/from pathlib import Path/import os\nfrom pathlib import Path/" core/settings.py
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
@@ -863,6 +861,10 @@ EOF
     /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
+import mimetypes
+mimetypes.add_type('text/css', '.css', True)
+mimetypes.add_type("application/javascript", ".js", True)
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     ('css',os.path.join(BASE_DIR, 'templates', 'css')),
@@ -871,7 +873,7 @@ STATICFILES_DIRS = [
     ('py',os.path.join(BASE_DIR, 'templates', 'py')),
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -1017,6 +1019,8 @@ import os
 from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
+from django.conf import settings
 from rest_framework import routers
 from frontend import views as frontendviews
 from api import views as apiviews
@@ -1058,7 +1062,7 @@ urlpatterns = [
     path('create/<int:pk>', frontendviews.UserCreateView.as_view(), name='create_user'),
     path('update/<int:pk>', frontendviews.UserUpdateView.as_view(), name='update_user'),
     path('delete/<int:pk>', frontendviews.UserDeleteView.as_view(), name='delete_user'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 EOF
     pip freeze > requirements.txt
 fi
@@ -1084,177 +1088,17 @@ python3 manage.py loaddata admin_interface_theme_bootstrap.json
 python3 manage.py loaddata admin_interface_theme_foundation.json
 python3 manage.py loaddata admin_interface_theme_uswds.json
 
-## Set Rights to apache/nginx user
-chown -R www-data:www-data /var/www/django
-
 ## Install django crontab on root crontab (app cron/tasks.py)
 python3 manage.py crontab remove
 python3 manage.py crontab add
 
-cat <<EOF > /etc/nginx/sites-available/django.conf
-map \$http_upgrade \$connection_upgrade {
-        default upgrade;
-        ''      close;
-}
-
-upstream supervisor {
-        server 127.0.0.1:8000;
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name _;
-        #set_real_ip_from    127.0.0.1;
-        real_ip_header      X-Forwarded-For;
-        root /var/www/django;
-        index index.php index.html index.htm;
-
-        #OCSP
-        ssl_stapling off;
-        ssl_stapling_verify off;
-        add_header Strict-Transport-Security "max-age=15552000; includeSubdomains; preload";
-        ignore_invalid_headers off;
-
-        location ~ ^/(\.user.ini|\.htaccess|\.git|\.svn|\.project|LICENSE|README.md)
-        {
-                return 404;
-        }
-        location ^~ \.well-known{
-                allow all;
-                location ~ \.php$ {
-                        include snippets/fastcgi-php.conf;
-                        fastcgi_pass unix:/run/php/php-fpm.sock;
-                }
-        }
-
-        location ^~ /static/
-        {
-                root /var/www/django/static;
-                autoindex off;
-                sendfile           on;
-                tcp_nopush on;
-                rewrite  ^/static/(.*) /\$1 break;
-                location ~ \.php$ {
-                        rewrite  ^/static/(.*) /\$1 break;
-                        include snippets/fastcgi-php.conf;
-                        fastcgi_pass unix:/run/php/php-fpm.sock;
-                }
-        }
-        location /
-        {
-                proxy_pass http://supervisor;
-                proxy_set_header Host \$host;
-                proxy_set_header X-Real-IP \$remote_addr;
-                proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                proxy_set_header REMOTE-HOST \$remote_addr;
-                proxy_set_header X-Forwarded-Ssl on;
-                proxy_set_header X-Forwarded-Proto \$scheme;
-                proxy_set_header X-Forwarded-Host \$http_host;
-                proxy_pass_header       Set-Cookie;
-                proxy_redirect off;
-                proxy_buffering off;
-                proxy_socket_keepalive on;
-
-                add_header Strict-Transport-Security "max-age=0;";
-
-                #Set Nginx Cache
-                proxy_no_cache 1;
-                proxy_cache_bypass 1;
-                add_header Cache-Control no-cache;
-                expires -1;
-
-                proxy_connect_timeout 86400s;
-                proxy_send_timeout 86400s;
-                proxy_read_timeout 86400s;
-                proxy_ignore_client_abort on;
-
-                ## CSRF
-                proxy_set_header X-XSRF-TOKEN \$http_x_xsrf_token;
-                proxy_set_header Token \$http_token;
-                proxy_pass_header  Token;
-
-                ## Is Websocket
-                proxy_http_version 1.1;
-                proxy_set_header Upgrade \$http_upgrade;
-                proxy_set_header Connection \$connection_upgrade;
-        }
-}
-EOF
-rm -f /etc/nginx/sites-enabled/*
-ln -s /etc/nginx/sites-available/django.conf /etc/nginx/sites-enabled/
-ln -sf /usr/lib/systemd/system/nginx.service /etc/systemd/system/multi-user.target.wants/nginx.service
-systemctl daemon-reload
-service nginx restart
-
-## Install the systemd service to autolaunch python asgi webserver
-cat <<EOF > /etc/systemd/system/django.service
-[Unit]
-Description=Unit for starting a basic Django app
-Requires=network.target
-After=network.target
-After=syslog.target
-
-[Service]
-Type=simple
-Restart=on-failure
-WorkingDirectory=/var/www/django
-ExecStart=/var/www/django/bin/daphne core.asgi:application --proxy-headers --port 8000 --bind 0.0.0.0 -v1
-TimeoutStartSec=0
-RestartSec=10
-Restart=on-failure
-User=www-data
-KillSignal=SIGQUIT
-
-[Install]
-WantedBy=multi-user.target
-EOF
-ln -sf /etc/systemd/system/django.service /etc/systemd/system/multi-user.target.wants/django.service
-systemctl daemon-reload
-service django restart
-
-
-## Prepare simplify the reloading of code
-cat <<EOF > build.sh
-#!/bin/bash
-source bin/activate
-/usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
-pip freeze > requirements.txt
-python3 manage.py collectstatic --clear --noinput
-python3 manage.py makemigrations
-python3 manage.py migrate
-if [ \$(id -u) -eq 0 ]; then
-    chown -R www-data:www-data /var/www/django
-    service django restart
-    service nginx restart
-else
-    sudo chown -R www-data:www-data /var/www/django
-    sudo service django restart
-    sudo service nginx restart
-fi
-EOF
-chmod +x build.sh
-chown -R www-data:www-data build.sh
-
-cat <<EOF > run_debug_foreground.sh
-#!/bin/bash
-service django stop
-source bin/activate
-/usr/bin/sed -i "s/DEBUG =.*/DEBUG = True/" core/settings.py
-#python manage.py runcrons --force
-#django-admin compilemessages
-#python3 manage.py runserver --insecure 0.0.0.0:8000
-/var/www/django/bin/daphne core.asgi:application --proxy-headers --port 8000 --bind 0.0.0.0 -v3
-/usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
-EOF
-chmod +x run_debug_foreground.sh
-chown -R www-data:www-data run_debug_foreground.sh
-EOF
+EOFF
 
 docker build -t django-simplify .
 docker volume create django-simplify-db
 docker volume create django-simplify-static
 docker volume create django-simplify-media
-docker run -d --name django-simplify -p 80:80 -p 8000:8000 --network host -v django-simplify-db:/var/www/django/db -v django-simplify-static:/var/www/django/static -v django-simplify-media:/var/www/django/media django-simplify
+docker run -d --name django-simplify -p 80:80 -v django-simplify-db:/var/www/django/db -v django-simplify-static:/var/www/django/static -v django-simplify-media:/var/www/django/media django-simplify
 #docker exec -it django-simplify python manage.py migrate
 docker tag django-simplify $dockerusername/django-simplify
 docker push $dockerusername/django-simplify
