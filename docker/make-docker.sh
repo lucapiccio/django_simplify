@@ -26,9 +26,9 @@ RUN apt-get -y -q install bash python3 python3-pip python3-venv python3-dev defa
 RUN apt-get clean
 RUN python3 -m venv /var/www/django
 WORKDIR /var/www/django
-COPY install.sh /tmp/
-RUN chmod +x /tmp/install.sh
-RUN /bin/bash /tmp/install.sh
+COPY install-inside-docker.sh /tmp/
+RUN chmod +x /tmp/install-inside-docker.sh
+RUN /bin/bash /tmp/install-inside-docker.sh
 EXPOSE 80
 VOLUME /var/www/django/static
 VOLUME /var/www/django/media
