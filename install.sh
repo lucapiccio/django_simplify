@@ -78,6 +78,7 @@ else
     mkdir templates/rest_framework
     touch templates/css/base.css
     touch templates/img/favicon.ico
+    mkdir media
 
     ## Create customuser model
 cat <<EOF > users/models.py
