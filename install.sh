@@ -828,6 +828,7 @@ cat <<EOF > templates/500.html
 EOF
 
     ## Configure Additional Settings
+    /usr/bin/sed -i "s/STATIC_URL =.*/STATIC_URL = '\/static\/'/" core/settings.py
     /usr/bin/sed -i "s/db.sqlite3/db\/db.sqlite3/" core/settings.py
     /usr/bin/sed -i "s/from pathlib import Path/import os\nfrom pathlib import Path/" core/settings.py
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
@@ -837,6 +838,10 @@ EOF
     /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
+import mimetypes
+mimetypes.add_type('text/css', '.css', True)
+mimetypes.add_type("application/javascript", ".js", True)
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     ('css',os.path.join(BASE_DIR, 'templates', 'css')),
@@ -845,7 +850,7 @@ STATICFILES_DIRS = [
     ('py',os.path.join(BASE_DIR, 'templates', 'py')),
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -1054,7 +1059,7 @@ urlpatterns = [
     path('create/<int:pk>', frontendviews.UserCreateView.as_view(), name='create_user'),
     path('update/<int:pk>', frontendviews.UserUpdateView.as_view(), name='update_user'),
     path('delete/<int:pk>', frontendviews.UserDeleteView.as_view(), name='delete_user'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 EOF
     pip freeze > requirements.txt
 fi
