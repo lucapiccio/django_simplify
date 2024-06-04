@@ -372,22 +372,26 @@ cat <<EOF > templates/base_generic.html
   <body>
     <div class="wrapper">
         {% block navbar %}
-        <div class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" role="navigation" aria-label="navbar">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" role="navigation" aria-label="navbar">
+            <div class="container-fluid">
+            <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav pull-right">
-                <li><a class='nav-link' href="{% url 'index' %}">Home</a></li>
+                <li class="navbar-nav"><a class='nav-link' href="{% url 'index' %}">Home</a></li>
                 {% block userlinks %}
                     {% if user.is_authenticated %}
-                        <li><a class='nav-link' href="/api">API browser</a></li>
-                        <li><a class='nav-link' onclick="return confirm('Logout?');" href="{% url 'logout' %}">Logout</a></li>
+                        <li class="navbar-nav"><a class='nav-link' href="/api">API browser</a></li>
+                        <li class="navbar-nav"><a class='nav-link' onclick="return confirm('Logout?');" href="{% url 'logout' %}">Logout</a></li>
                         {% if user.is_staff %}
-                            <li><a class='nav-link' href="{% url 'admin:index' %}">Django Admin</a></li>
+                            <li class="navbar-nav"><a class='nav-link' href="{% url 'admin:index' %}">Django Admin</a></li>
                         {% endif %}
                     {% else %}
-                        <li><a class='nav-link' href="{% url 'login' %}">Login</a></li>
+                        <li class="navbar-nav"><a class='nav-link' href="{% url 'login' %}">Login</a></li>
                     {% endif %}
                 {% endblock %}
             </ul>
-        </div><!-- /.navbar -->
+            </div>
+            </div>
+        </nav><!-- /.navbar -->
         {% endblock %}
         <div class="container text-center">
             <div class="modal fade" id="create-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -531,6 +535,11 @@ EOF
 
 ## Create personal CSS
 cat <<EOF > templates/css/base.css
+@media (min-width:768px) {
+    ul.navbar-nav {
+      text-align: right;
+    }
+}
 .container {
     padding-top: 70px;
 }
@@ -1320,7 +1329,7 @@ pip freeze > requirements.txt
 python3 manage.py collectstatic --clear --noinput
 python3 manage.py makemigrations
 python3 manage.py migrate
-if [ "\$(whoami)" -eq "root" ]; then
+if [ \$(id -u) -eq 0 ]; then
     chown -R www-data:www-data /var/www/django
     #crontab -r
     #python3 manage.py crontab remove
