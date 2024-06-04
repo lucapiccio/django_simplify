@@ -1251,7 +1251,10 @@ chown -R www-data:www-data run_debug_foreground.sh
 EOF
 
 docker build -t django-simplify .
-docker run --name django-simplify -p 80:80 -p 8000:8000 --network host -d django-simplify
+docker volume create django-simplify-db
+docker volume create django-simplify-static
+docker volume create django-simplify-media
+docker run -d --name django-simplify -p 80:80 -p 8000:8000 --network host -v django-simplify-db:/var/www/django/db -v django-simplify-static:/var/www/django/static -v django-simplify-media:/var/www/django/media django-simplify
 #docker exec -it django-simplify python manage.py migrate
 docker tag django-simplify $dockerusername/django-simplify
 docker push $dockerusername/django-simplify
