@@ -388,9 +388,9 @@ cat <<EOF > templates/base_generic.html
         <link rel="stylesheet" href="{% static 'css/base.css' %}?{% now "U" %}" type="text/css">
         <!-- JS -->
         {% bootstrap_javascript %}
-        <script src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
-        <script src="{% static "tinymce/tinymce.min.js" %}?{% now "U" %}"></script>
-        <script src="{% static "js/custom_modal.js" %}?{% now "U" %}"></script>
+        <script type="application/javascript" src="{% static 'fontawesomefree/js/all.min.js' %}?{% now "U" %}"></script>
+        <script type="application/javascript" src="{% static "tinymce/tinymce.min.js" %}?{% now "U" %}"></script>
+        <script type="application/javascript" src="{% static "js/custom_modal.js" %}?{% now "U" %}"></script>
     {% endblock %}
   {% endblock %}
   </head>
