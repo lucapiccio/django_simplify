@@ -70,6 +70,7 @@ else
     django-admin startapp api
     ## Create app for crontab
     django-admin startapp cron
+    mkdir db
     mkdir templates
     mkdir templates/css
     mkdir templates/js
@@ -827,6 +828,7 @@ cat <<EOF > templates/500.html
 EOF
 
     ## Configure Additional Settings
+    /usr/bin/sed -i "s/db.sqlite3/db\/db.sqlite3/" core/settings.py
     /usr/bin/sed -i "s/from pathlib import Path/import os\nfrom pathlib import Path/" core/settings.py
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
     /usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
