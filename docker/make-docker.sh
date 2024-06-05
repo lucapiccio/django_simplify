@@ -1098,7 +1098,6 @@ DJANGO_SUPERUSER_USERNAME=admin \
 DJANGO_SUPERUSER_PASSWORD=admin \
 DJANGO_SUPERUSER_EMAIL="admin@localhost" \
 python3 manage.py createsuperuser --noinput
-EOFF
 
 cat <<EOF > build.sh
 #!/bin/bash
@@ -1123,11 +1122,14 @@ else
 fi
 EOF
 chmod +x build.sh
+EOFF
 
 docker build -t django-simplify .
 docker volume create django-simplify-volume
 docker run -d --name django-simplify -p 80:80 -v django-simplify-volume:/var/www/django django-simplify
 #docker exec -it django-simplify ./build.sh
+
+## Push image
 if [ "$dockerusername" != "" ] ; then
     if [ "$dockerrepo" != "" ] ; then
         docker tag django-simplify $dockerusername/$dockerrepo
