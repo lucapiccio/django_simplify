@@ -1129,9 +1129,10 @@ docker run -d --name django-simplify -p 80:80 -v django-simplify-volume:/var/www
 #docker exec -it django-simplify ./build.sh
 if [ "$dockerusername" != "" ] ; then
     if [ "$dockerrepo" != "" ] ; then
-        dockerrepo = "django-simplify"
+        docker tag django-simplify $dockerusername/$dockerrepo
+        docker push $dockerusername/$dockerrepo
+        docker pull $dockerusername/$dockerrepo
+    else
+        echo "No repository specified. Do not save to dockerhub"
     fi
-    docker tag django-simplify $dockerusername/$dockerrepo
-    docker push $dockerusername/$dockerrepo
-    docker pull $dockerusername/$dockerrepo
 fi
