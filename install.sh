@@ -359,6 +359,7 @@ cat <<EOF > templates/base_generic.html
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="robots" content="NONE,NOARCHIVE" />
         <link rel="icon" href="{% static 'img/favicon.ico' %}">
+        <base href="{% static '/' %}">
         <!-- CSS -->
         {% bootstrap_css %}
         <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}?{% now "U" %}" type="text/css">
@@ -838,10 +839,6 @@ EOF
     /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
-import mimetypes
-mimetypes.add_type('text/css', '.css', True)
-mimetypes.add_type("application/javascript", ".js", True)
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     ('css',os.path.join(BASE_DIR, 'templates', 'css')),
