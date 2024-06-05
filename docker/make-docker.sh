@@ -34,6 +34,7 @@ RUN chmod +x /tmp/install-inside-docker.sh
 RUN /bin/bash /tmp/install-inside-docker.sh
 EXPOSE 80
 VOLUME /var/www/django
+RUN source /var/www/django/bin/activate
 CMD ["/var/www/django/bin/daphne", "core.asgi:application", "--proxy-headers", "--port", "80", "--bind", "0.0.0.0", "-v1"]
 EOF
 
