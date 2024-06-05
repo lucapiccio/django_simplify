@@ -1102,7 +1102,6 @@ python3 manage.py createsuperuser --noinput
 cat <<EOF > build.sh
 #!/bin/bash
 source bin/activate
-/usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
 pip freeze > requirements.txt
 python3 manage.py collectstatic --clear --noinput
 python3 manage.py makemigrations
