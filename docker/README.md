@@ -9,10 +9,21 @@ Launch a django site with daphne listening on port 80, with a volume mounted for
 ## Requirements (optional)
 - dockerhub account
 - precreated repository on dockerhub named django_simplify
-
-## Using
+## Commands
 - cd /tmp
 - git clone https://github.com/lucapiccio/django_simplify.git
 - chmod +x django_simplify/docker/make-docker.sh
 - cd django_simplify/docker
 - sudo ./make-docker.sh
+
+# Standard Using
+- docker pull swipon/simpledjango:latest
+- docker volume create django-simplify-volume
+- docker run -d --name django-simplify -p 80:80 -v django-simplify-volume:/var/www/django django-simplify
+
+## Edit django
+- cd $(docker volume inspect django-simplify-volume | grep Mountpoint | awk '{print $2}' | cut -d\" -f2)
+- make your modification
+
+### Make collect static + makemigration + migrate
+- docker exec -it django-simplify ./build.sh
