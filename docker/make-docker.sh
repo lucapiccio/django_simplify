@@ -30,9 +30,7 @@ COPY install-inside-docker.sh /tmp/
 RUN chmod +x /tmp/install-inside-docker.sh
 RUN /bin/bash /tmp/install-inside-docker.sh
 EXPOSE 80
-VOLUME /var/www/django/static
-VOLUME /var/www/django/media
-VOLUME /var/www/django/db
+VOLUME /var/www/django
 CMD ["/var/www/django/bin/daphne", "core.asgi:application", "--proxy-headers", "--port", "80", "--bind", "0.0.0.0", "-v1"]
 EOF
 
@@ -382,6 +380,7 @@ cat <<EOF > templates/base_generic.html
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="robots" content="NONE,NOARCHIVE" />
         <link rel="icon" href="{% static 'img/favicon.ico' %}">
+        <base href="{% static '/' %}">
         <!-- CSS -->
         {% bootstrap_css %}
         <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}?{% now "U" %}" type="text/css">
@@ -855,16 +854,12 @@ EOF
     /usr/bin/sed -i "s/db.sqlite3/db\/db.sqlite3/" core/settings.py
     /usr/bin/sed -i "s/from pathlib import Path/import os\nfrom pathlib import Path/" core/settings.py
     /usr/bin/sed -i "s/ALLOWED_HOSTS =.*/ALLOWED_HOSTS = ['*']/" core/settings.py
-    /usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
+    /usr/bin/sed -i "s/DEBUG =.*/DEBUG = True/" core/settings.py
     /usr/bin/sed -i "s/INSTALLED_APPS = \[/INSTALLED_APPS = \[\n    'daphne',/" core/settings.py
     /usr/bin/sed -i "s/'django.contrib.staticfiles',/'django.contrib.staticfiles',\n    'rest_framework',\n    'django_crontab',\n    'bootstrap_modal_forms',\n    'bootstrap5',\n    'fontawesomefree',\n    'zxcvbn_password',\n    'import_export',\n    'tinymce',\n    'users',\n    'frontend',\n    'api',\n    'cron',/" core/settings.py
     /usr/bin/sed -i "s/'django.contrib.admin',/'admin_interface',\n    'colorfield',\n    'django.contrib.admin',/" core/settings.py
 
 cat <<EOF >> core/settings.py
-import mimetypes
-mimetypes.add_type('text/css', '.css', True)
-mimetypes.add_type("application/javascript", ".js", True)
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     ('css',os.path.join(BASE_DIR, 'templates', 'css')),
@@ -1076,6 +1071,8 @@ fi
 
 ## Collect all template and static files in static folder configured in settings
 python3 manage.py collectstatic --clear --noinput
+chmod -R 777 static
+chmod -R 777 media
 
 ## Prepare the migrations for the DB
 python3 manage.py makemigrations
@@ -1091,14 +1088,11 @@ python3 manage.py loaddata admin_interface_theme_uswds.json
 ## Install django crontab on root crontab (app cron/tasks.py)
 python3 manage.py crontab remove
 python3 manage.py crontab add
-
 EOFF
 
 docker build -t django-simplify .
-docker volume create django-simplify-db
-docker volume create django-simplify-static
-docker volume create django-simplify-media
-docker run -d --name django-simplify -p 80:80 -v django-simplify-db:/var/www/django/db -v django-simplify-static:/var/www/django/static -v django-simplify-media:/var/www/django/media django-simplify
+docker volume create django-simplify-volume
+docker run -d --name django-simplify -p 80:80 -v django-simplify-volume:/var/www/django django-simplify
 #docker exec -it django-simplify python manage.py migrate
 docker tag django-simplify $dockerusername/django-simplify
 docker push $dockerusername/django-simplify
