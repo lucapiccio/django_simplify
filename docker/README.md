@@ -25,8 +25,10 @@ Launch a django site with daphne listening on port 80, with a volume mounted for
 - cd $(docker volume inspect django-simplify-volume | grep Mountpoint | awk '{print $2}' | cut -d\" -f2)
 - make your modification
 
-### Make collect static + makemigration + migrate
+### Make collect static + makemigration + migrate + reload
 - docker exec -it django-simplify ./build.sh
+- docker container stop django-simplify
+- docker container start django-simplify
 
 ## Exec some commands inside the docker
 - docker exec -it django-simplify /bin/bash
