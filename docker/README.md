@@ -5,11 +5,8 @@ Push this image on your dockerhub account
 
 Launch a django site with daphne listening on port 80, with a volume mounted for /var/www/django with the code and the venv to simple editing out of container
 
-# Create local docker
-
-
-# Create your own docker repository
-## Requirements
+# Create your own docker
+## Requirements (optional)
 - dockerhub account
 - precreated repository on dockerhub named django_simplify
 
