@@ -27,3 +27,8 @@ Launch a django site with daphne listening on port 80, with a volume mounted for
 
 ### Make collect static + makemigration + migrate
 - docker exec -it django-simplify ./build.sh
+
+## Exec some commands inside the docker
+- docker exec -it django-simplify /bin/bash
+- source bin/activate
+- launch your command
