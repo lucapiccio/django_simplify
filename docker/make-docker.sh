@@ -697,14 +697,14 @@ var asyncSuccessMessageUpdate = [
     "</button>",
     "</div>",
     "<script>",
-    "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
+    "\\\$('.alert').fadeTo(2000, 500).slideUp(500, function () {\\\$('.alert').slideUp(500).remove();});",
     "<\/script>"
 ].join("");
 
 // modal form
 function updateBookModalForm() {
-    $(".update-book").each(function () {
-        $(this).modalForm({
+    \\\$(".update-book").each(function () {
+        \\\$(this).modalForm({
             formURL: $(this).data("form-url"),
             asyncUpdate: true,
             asyncSettings: {
@@ -722,8 +722,8 @@ function updateBookModalForm() {
 
 // Delete book buttons - formURL is retrieved from the data of the element
 function deleteBookModalForm() {
-    $(".delete-book").each(function () {
-        $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
+    \\\$(".delete-book").each(function () {
+        \\\$(this).modalForm({formURL: \\\$(this).data("form-url"), isDeleteForm: true});
     });
 }
 //deleteBookModalForm();
