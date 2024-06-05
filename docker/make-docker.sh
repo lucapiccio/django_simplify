@@ -1,8 +1,11 @@
 #!/bin/bash
 
 apt -y -q install docker docker-compose docker.io
-read -p "Enter your docker login username:" dockerusername
-docker login --username $dockerusername
+read -p "Enter your docker login username (optional, leave blank if not have):" dockerusername
+if [ "$dockerusername" != "" ] ; then
+    read -p "Enter your docker Repository name:" dockerrepo
+    docker login --username $dockerusername
+fi
 
 cat <<EOF > .dockerignore
 ./pyvenv.cfg
@@ -1088,13 +1091,47 @@ python3 manage.py loaddata admin_interface_theme_uswds.json
 ## Install django crontab on root crontab (app cron/tasks.py)
 python3 manage.py crontab remove
 python3 manage.py crontab add
+
+## Create a default superuser admin admin
+DJANGO_SUPERUSER_USERNAME=admin \
+DJANGO_SUPERUSER_PASSWORD=admin \
+DJANGO_SUPERUSER_EMAIL="admin@localhost" \
+python3 manage.py createsuperuser --noinput
 EOFF
+
+cat <<EOF > build.sh
+#!/bin/bash
+source bin/activate
+/usr/bin/sed -i "s/DEBUG =.*/DEBUG = False/" core/settings.py
+pip freeze > requirements.txt
+python3 manage.py collectstatic --clear --noinput
+python3 manage.py makemigrations
+python3 manage.py migrate
+if [ $(id -u) -eq 0 ]; then
+    chmod -R 777 /var/www/django/static 
+    chmod -R 777 /var/www/django/media
+    crontab -r
+    python3 manage.py crontab remove
+    python3 manage.py crontab add
+else
+    sudo chmod -R 777 /var/www/django/static 
+    sudo chmod -R 777 /var/www/django/media
+    sudo crontab -r
+    sudo python3 manage.py crontab remove
+    sudo python3 manage.py crontab add
+fi
+EOF
+chmod +x build.sh
 
 docker build -t django-simplify .
 docker volume create django-simplify-volume
 docker run -d --name django-simplify -p 80:80 -v django-simplify-volume:/var/www/django django-simplify
-#docker exec -it django-simplify python manage.py migrate
-docker tag django-simplify $dockerusername/django-simplify
-docker push $dockerusername/django-simplify
-#docker pull $dockerusername/django-simplify
-
+#docker exec -it django-simplify ./build.sh
+if [ "$dockerusername" != "" ] ; then
+    if [ "$dockerrepo" != "" ] ; then
+        dockerrepo = "django-simplify"
+    fi
+    docker tag django-simplify $dockerusername/$dockerrepo
+    docker push $dockerusername/$dockerrepo
+    docker pull $dockerusername/$dockerrepo
+fi
