@@ -19,7 +19,7 @@ Launch a django site with daphne listening on port 80, with a volume mounted for
 # Standard Using
 - docker pull swipon/simpledjango:latest
 - docker volume create django-simplify-volume
-- docker run -d --name django-simplify -p 80:80 -v django-simplify-volume:/var/www/django django-simplify
+- docker run -d --name django-simplify --restart unless-stopped -p 80:80 -v django-simplify-volume:/var/www/django django-simplify
 
 ## Edit django
 - cd $(docker volume inspect django-simplify-volume | grep Mountpoint | awk '{print $2}' | cut -d\" -f2)
