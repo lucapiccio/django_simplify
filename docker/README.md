@@ -34,3 +34,6 @@ Launch a django site with daphne listening on port 80, with a volume mounted for
 - docker exec -it django-simplify /bin/bash
 - source bin/activate
 - launch your command
+
+## Reenable autorestart if launched without it
+docker update --restart unless-stopped django-simplify
