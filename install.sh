@@ -952,7 +952,7 @@ EOF
 
 #### Using redis as cache server
 if [ ! -d /etc/redis ] ; then
-    apt install redis-server
+    apt-get -y -q install redis-server
 fi
 
 cat <<EOF >> core/settings.py
