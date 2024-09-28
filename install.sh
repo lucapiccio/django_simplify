@@ -1128,9 +1128,9 @@ python3 manage.py crontab remove
 python3 manage.py crontab add
 
 while true; do
-    read -p "Django is listen on port 8000. Do you wish to install and configure Nginx As reverse proxy on port 80/443? [yN]" yn
+    read -p "Django is listen on port 8000. Do you wish to install and configure Nginx As reverse proxy on port 80/443? [Yn]" yn
     case $yn in
-        [Yy]* ) 
+        [Yy]*|"" ) 
 #### Needed reverse proxy (to serve static files and optionally to configure websockets)
 if [ ! -d "/etc/nginx" ]; then
     apt-get -y -q install nginx php-fpm
@@ -1247,7 +1247,7 @@ ln -s /etc/nginx/sites-available/django_* /etc/nginx/sites-enabled/
 systemctl daemon-reload
 service nginx restart
 break;;
-        [Nn]*|"" ) break;;
+        [Nn]* ) break;;
         * ) break;;
     esac
 done
