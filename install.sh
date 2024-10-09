@@ -51,6 +51,8 @@ else
     pip install h2
     pip install pymysql
     pip install mysqlclient
+    pip install paramiko
+    pip install requests
     pip install django-crontab
     pip install django-bootstrap-v5
     pip install fontawesomefree
@@ -256,6 +258,7 @@ EOF
     ## Create frontend view for website
 cat <<EOF > frontend/views.py
 from django.shortcuts import render,redirect
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import Http404,HttpResponse
@@ -265,7 +268,108 @@ from django.views.decorators.http import require_http_methods
 from .models import *
 from users.models import *
 from users.forms import *
+from time import sleep
+from email.message import EmailMessage
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
+import sys
+import json
+import requests
+import paramiko
+import subprocess
+import smtplib
+import numbers
 
+## Standard Common Functions (exec,ssh,mail,api get, api post)
+def commandBash(command):
+    output = subprocess.getoutput(command)
+    if settings.DEBUG is True:
+        log = "DJANGO CMD: " + command
+        print(log, file=sys.stderr)
+        log = "DJANGO CMD OUTPUT: " + output
+        print(log, file=sys.stderr)
+    output = output.split('\n')
+    if len(output) == 0:
+        return False
+    return output
+
+def commandSSH(host,remoteuser,command):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, username=remoteuser,key_filename=os.path.join("~", ".ssh", "id_rsa"))
+    stdin, stdout, stderr = ssh.exec_command(command)
+    output = stdout.readlines()
+    ssh.close()
+    return output
+
+def sendEmail(email_to,email_from,email_subject,email_body):
+    ## SMTP CONF
+    smtp_server = "localhost"
+    port = 25
+    login = ""
+    password = ""
+    ## If configured in core/settings.py you can use the following:
+    #smtp_server = settings.SMTP_HOST
+    #port = settings.SMTP_PORT
+    #login = settings.SMTP_LOGIN
+    #password = settings.SMTP_PASSWORD
+
+    ## Formatting mail
+    msg = MIMEText(email_body)
+    msg['Subject'] = email_subject
+    msg['From'] = email_from
+    msg['To'] = email_to
+
+    ## Send mail
+    with smtplib.SMTP(smtp_server, port) as server:
+        ## Si non localhost on utilise l'auth
+        if smtp_server != "localhost" and smtp_server != "127.0.0.1":
+            ## Si 587 active starttls
+            if port==587:
+                server.starttls()
+            ## And login with password si user not null
+            if login != "" and password != "":
+                server.login(login, password)
+        server.sendmail(email_from, email_to, msg.as_string())
+        server.quit()
+    return True
+
+def apiGet(apiurlpath="/api/users",host="127.0.0.1",ssl=True,httpport=443,api_key='secret',api_secret='secret'):
+    port = str(httpport)
+    if ssl is True:
+        proto='https://'
+    else:
+        proto='http://'
+    url = proto + host + ":" + port + apiurlpath
+
+    # request data
+    r = requests.get(url,verify=False,auth=(api_key, api_secret))
+    if r.status_code == 200:
+        response = json.loads(r.text)
+    else:
+        print ('Connection / Authentication issue, response received:')
+        response = r.text
+    return response
+
+def apiPost(apiurlpath="/api/users",host="127.0.0.1",ssl=True,httpport=443,api_key='secret',api_secret='secret',data={'test','test'}):
+    port = str(httpport)
+    if ssl is True:
+        proto='https://'
+    else:
+        proto='http://'
+    url = proto + host + ":" + port + apiurlpath
+
+    # request data
+    r = requests.post(url,verify=False,auth=(api_key, api_secret),data=data,headers={"Content-Type": "application/json"})
+    if r.status_code == 200:
+        response = json.loads(r.text)
+    else:
+        print ('Connection / Authentication issue, response received:')
+        response = r.text
+    return response
+
+## Views
 # homepage
 @login_required
 def index(request):
