@@ -62,6 +62,7 @@ else
     pip install django-admin-interface
     pip install django-zxcvbn-password
     pip install django-tinymce
+    pip install -U 'Twisted[tls,http2]'
     ## Create Django project
     django-admin startproject core .
     ## Create app for custom user fields
